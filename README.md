@@ -1,67 +1,178 @@
-# 🗳️ Quick-Poll App
+# Quick-Poll App
 
-A simple, single-page web application for creating and voting on quick, multiple-choice polls. Built as an exercise in front-end development using React and Tailwind CSS, following the **Scrum methodology**.
+A full-stack poll application with multiple questions support, user authentication, and anonymous voting with name requirements.
 
----
+## Features
 
-## 🚀 Product Increment (Sprint 1 Goal)
+✅ **User Authentication** - Only logged-in users can create polls  
+✅ **Multiple Questions** - Create polls with multiple questions per poll  
+✅ **Anonymous Voting** - Users must provide their name before voting  
+✅ **Multi-Recipient Sharing** - Share polls with multiple users  
+✅ **Real-time Results** - View vote counts and percentages in real-time  
+✅ **Database-Driven** - Uses Neon PostgreSQL for data persistence  
 
-The current working version of the application meets the core functionality for our first Sprint Goal:
+## Tech Stack
 
-* **Poll Creation:** Users can input a question and at least two options to create a new poll.
-* **Voting:** Any user can view an active poll and cast a single vote for one option.
-* **Results Display:** Poll results (vote counts and percentages) are displayed immediately after a user votes.
+- **Frontend**: React + Vite + Tailwind CSS
+- **Backend**: Node.js + Express.js
+- **Database**: Neon PostgreSQL
+- **Authentication**: JWT
+- **Icons**: Lucide React
 
----
+## Setup Instructions
 
-## 🛠️ Technology Stack
+### 1. Database Setup
 
-* **Frontend:** **React** (for component-based UI)
-* **Styling:** **Tailwind CSS** (for utility-first styling)
-* **State Management:** Local React state (useState)
-* **Icons:** [Lucide React](https://lucide.dev/)
+#### Create a Neon Database
+1. Go to [Neon Console](https://console.neon.tech/)
+2. Sign up or log in
+3. Create a new project
+4. Copy your database connection string
 
----
+#### Initialize the Database
+1. Open your Neon SQL Editor
+2. Copy the contents of `database/schema.sql`
+3. Run it in the SQL Editor
+4. Verify tables are created: `users`, `polls`, `questions`, `options`, `votes`
 
-## 🏃 Getting Started
+### 2. Environment Configuration
 
-### Prerequisites
+1. Create a `.env` file in the root directory:
+   ```env
+   DATABASE_URL=your_neon_connection_string_here
+   JWT_SECRET=generate_a_random_secret_here
+   PORT=3001
+   ```
 
-You need **Node.js** and **npm** (or yarn/pnpm) installed on your machine.
+2. Generate a JWT secret (run this in terminal):
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+   ```
+   Copy the output and use it as your `JWT_SECRET`
 
-### Installation and Run
+### 3. Install Dependencies
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [YOUR_REPOSITORY_URL]
-    cd quick-poll-app
-    ```
+```bash
+npm install
+```
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or yarn install
-    ```
+### 4. Run the Application
 
-3.  **Start the development server:**
-    ```bash
-    npm run dev
-    # or yarn dev
-    ```
+#### Terminal 1 - Start Backend Server
+```bash
+npm run dev:server
+```
+Server runs on http://localhost:3001
 
-The application will typically be available at `http://localhost:5173/` (or a similar port).
+#### Terminal 2 - Start Frontend
+```bash
+npm run dev
+```
+Frontend runs on http://localhost:5173
 
----
+## API Endpoints
 
-## 📂 Project Structure
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user (requires auth)
 
-The UI logic has been separated into functional components to improve maintainability
+### Polls
+- `GET /api/polls` - Get all public polls
+- `GET /api/polls/:pollId` - Get specific poll with questions
+- `POST /api/polls` - Create poll (requires auth)
+- `GET /api/polls/user/my-polls` - Get user's polls (requires auth)
 
+### Votes
+- `POST /api/votes/:pollId` - Submit votes (requires voter name)
+- `GET /api/votes/results/:pollId` - Get poll results
 
-## 💡 How to Use
+## Usage
 
-1.  Click the **"Create Poll"** button on the home screen.
-2.  Enter your question and at least two answer options.
-3.  Click **"Create Poll"**.
-4.  The app redirects you to the poll page. Click the **Share** ($\text{\Share2}$) icon to copy the poll's link.
-5.  Select an option and click the button to vote. Results will instantly appear.
+### Creating a Poll (Logged-in Users Only)
+1. Log in or register
+2. Click "Create Poll"
+3. Enter poll title
+4. Add multiple questions
+5. Add options for each question
+6. Optionally add recipients
+7. Click "Create Poll"
+
+### Voting
+1. Find a poll from the home page
+2. Click on the poll
+3. Enter your name when prompted
+4. Select answers for each question
+5. Click "Submit Votes"
+6. View real-time results
+
+## Project Structure
+
+```
+poll-app/
+├── database/
+│   └── schema.sql          # Database schema
+├── config/
+│   └── database.js         # Neon database connection
+├── middleware/
+│   └── auth.js             # JWT authentication middleware
+├── routes/
+│   ├── auth.js             # Authentication routes
+│   ├── polls.js            # Poll CRUD operations
+│   └── votes.js            # Voting routes
+├── src/
+│   ├── components/
+│   │   ├── CreatePollView.jsx
+│   │   ├── PollView.jsx
+│   │   ├── HomeView.jsx
+│   │   ├── MyPollsView.jsx
+│   │   ├── LoginView.jsx
+│   │   └── VoteNameModal.jsx
+│   ├── utils/
+│   │   └── api.js          # API client
+│   └── App.jsx             # Main app component
+├── server.js               # Express server
+└── SETUP.md               # Additional setup guide
+```
+
+## Database Schema
+
+### Tables
+- **users** - User accounts (username, email, password)
+- **polls** - Poll metadata (title, created_by, recipients)
+- **questions** - Poll questions (question_text, poll_id, is_required)
+- **options** - Answer options for each question
+- **votes** - Vote records (poll_id, question_id, option_id, voter_name)
+
+## Development
+
+### Backend Development
+```bash
+npm run dev:server    # Run with nodemon (auto-restart)
+npm run server        # Run without auto-restart
+```
+
+### Frontend Development
+```bash
+npm run dev           # Start Vite dev server
+npm run build         # Build for production
+```
+
+### Linting
+```bash
+npm run lint
+```
+
+## Environment Variables
+
+Required environment variables:
+- `DATABASE_URL` - Your Neon database connection string
+- `JWT_SECRET` - Secret key for JWT tokens
+- `PORT` - Backend server port (default: 3001)
+
+Optional:
+- `VITE_API_URL` - Backend API URL (default: http://localhost:3001)
+
+## License
+
+MIT
