@@ -1,6 +1,7 @@
 # Quick-Poll App
 
 A full-stack poll application with multiple questions support, user authentication, and anonymous voting with name requirements.
+This app was implemented as part of SE Lab 
 
 ## Features
 
